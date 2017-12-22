@@ -3,8 +3,8 @@ package com.huangxx.util.ExcelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -22,8 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Field;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +38,8 @@ import java.util.Map;
 public class ExcelUtils {
 
     private static final Logger log = LogManager.getLogger(ExcelUtils.class);
+
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yy HH:mm");
 
     /**
      * 用来验证excel与Vo中的类型是否一致 <br>
@@ -130,7 +132,7 @@ public class ExcelUtils {
      * @return voList
      * @throws RuntimeException
      */
-    public static <T> Collection<T> importExcel(Class<T> clazz, InputStream inputStream) {
+    public static <T> List<T> importExcel(Class<T> clazz, InputStream inputStream) {
         Workbook workbook = null;
         try {
             workbook = WorkbookFactory.create(inputStream);
@@ -141,7 +143,7 @@ public class ExcelUtils {
             return null;
         }
 
-        Collection<T> list = new ArrayList<>();
+        List<T> list = new ArrayList<>();
         Sheet sheet = workbook.getSheetAt(0);
         Iterator<Row> rowIterator = sheet.rowIterator();
 
@@ -151,6 +153,7 @@ public class ExcelUtils {
                 Row row = rowIterator.next();
                 if (row.getRowNum() == 0) {
                     titleMap = getHeaderTitleMap(row);
+                    continue;
                 }
                 Map<String, Object> map = initMapValue(row, titleMap);
                 if (MapUtils.isEmpty(map)) {
@@ -232,7 +235,7 @@ public class ExcelUtils {
             }
             return t;
         } catch (Exception e) {
-            log.error("can not instance class:{}", clazz.getSimpleName(), e);
+            log.error("can not instance class:" + clazz.getSimpleName(), e);
             throw new RuntimeException(MessageFormat.format("can not instance class:{0}",
                     clazz.getSimpleName()), e);
         }

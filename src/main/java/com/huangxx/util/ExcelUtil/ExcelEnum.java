@@ -1,11 +1,8 @@
 package com.huangxx.util.ExcelUtil;
 
-import lombok.Getter;
-
 /**
  * Created by huangxx on 2017/12/18.
  */
-@Getter
 public enum ExcelEnum {
 
     HSSF(".xls", "excel 2007"),
